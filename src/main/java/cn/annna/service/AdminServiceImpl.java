@@ -55,7 +55,6 @@ public class AdminServiceImpl implements AdminService {
             map.put("state","success");
             map.put("message",admin.getUsername() + " 欢迎回家");
             valueOperations.set("TOKEN_" + token,admin);
-            System.out.println(admin.getUsername() +" 欢迎回家");
             return map;
         }catch (Exception e){
             map.put("state","error");
