@@ -103,7 +103,7 @@
                     <!--增加jvm参数-->
                     <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
                     <!--指定入口类-->
-                    <mainClass>cn.annna.Application</mainClass>
+                    <mainClass>cn.annna.MasterApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>
