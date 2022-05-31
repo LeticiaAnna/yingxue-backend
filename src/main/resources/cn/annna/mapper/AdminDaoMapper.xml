@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- namespace 需要补全 -->
+<mapper namespace="cn.annna.dao.AdminDao">
+
+    <insert id="insert" parameterType="cn.annna.entity.Admin">
+        INSERT INTO `yx_admin` (username,salt,password,state,createTime)
+        VALUE (#{ username },#{ salt },#{ password },#{ state },#{ createTime })
+    </insert>
+
+    <delete id="delete" parameterType="Integer">
+        DELETE * FROM `yx_admin` WHERE id = #{ id }
+    </delete>
+
+    <update id="update" parameterType="cn.annna.entity.Admin">
+        UPDATE `yx_admin` SET username = #{ username },salt = #{ salt },password = #{ password },state = #{ state },createTime = #{ createTime } WHERE id = #{ id }
+    </update>
+
+    <select id="selectById" parameterType="Integer" resultType="cn.annna.entity.Admin">
+        SELECT * FROM `yx_admin` WHERE id = #{ id }
+    </select>
+
+    <select id="selectByUsername" parameterType="String" resultType="cn.annna.entity.Admin">
+        SELECT * FROM `yx_admin` WHERE username = #{ username }
+    </select>
+
+    <select id="selectAll" resultType="cn.annna.entity.Admin">
+        SELECT * FROM `yx_admin`
+    </select>
+
+</mapper>

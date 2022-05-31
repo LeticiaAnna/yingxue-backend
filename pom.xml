@@ -8,6 +8,7 @@
         <version>2.2.5.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>cn.annna</groupId>
     <artifactId>master</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -90,6 +91,17 @@
             <version>2.0.3</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>4.2.3</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -97,6 +109,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.2.5.RELEASE</version>
                 <!--使用热部署出现中文乱码解决方案-->
                 <configuration>
                     <fork>true</fork>
