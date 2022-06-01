@@ -54,7 +54,7 @@ public class AdminServiceImpl implements AdminService {
             }
             map.put("state","success");
             map.put("message",token);
-            valueOperations.set("TOKEN_" + token,admin);
+            valueOperations.set("TOKEN_" + token,admin,2,TimeUnit.HOURS);
             return map;
         }catch (Exception e){
             map.put("state","error");

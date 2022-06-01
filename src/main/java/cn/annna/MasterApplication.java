@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
+@tk.mybatis.spring.annotation.MapperScan("cn.annna.dao")
 @MapperScan("cn.annna.dao")
 public class MasterApplication {
 
