@@ -109,7 +109,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.2.5.RELEASE</version>
+
                 <!--使用热部署出现中文乱码解决方案-->
                 <configuration>
                     <fork>true</fork>

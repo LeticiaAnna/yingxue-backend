@@ -53,7 +53,7 @@ public class AdminServiceImpl implements AdminService {
                 throw new RuntimeException("账户也被禁止登录,如有疑问请联系客服");
             }
             map.put("state","success");
-            map.put("message",admin.getUsername() + " 欢迎回家");
+            map.put("message",token);
             valueOperations.set("TOKEN_" + token,admin);
             return map;
         }catch (Exception e){
@@ -127,4 +127,32 @@ public class AdminServiceImpl implements AdminService {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    @Override
+    public Admin getUserInfo(String token) {
+        try {
+            redisTemplate.setKeySerializer(new StringRedisSerializer());
+            ValueOperations valueOperations = redisTemplate.opsForValue();
+            Object o = valueOperations.get("TOKEN_" + token);
+            if (o == null){
+                throw new RuntimeException("用户信息不存在");
+            }
+            return (Admin) o;
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void logout(String token){
+        try {
+            redisTemplate.setKeySerializer(new StringRedisSerializer());
+            if (!redisTemplate.delete("TOKEN_" + token)){
+                throw new RuntimeException("账户登出失败");
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
 }

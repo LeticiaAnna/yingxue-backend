@@ -36,6 +36,26 @@ public class AdminController {
         return adminService.getImageCodes();
     }
 
+    @RequestMapping("/getUserInfo")
+    @ResponseBody
+    public Admin getUserInfo(String token){
+        try {
+            return adminService.getUserInfo(token);
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/logout")
+    @ResponseBody
+    public void logout(String token){
+        try {
+            adminService.logout(token);
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
     @RequestMapping("/temp")
     @ResponseBody
     public String temp(){

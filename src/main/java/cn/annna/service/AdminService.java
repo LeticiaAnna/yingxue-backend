@@ -14,4 +14,8 @@ public interface AdminService {
 
     public Map<String,String> getImageCodes();
 
+    public Admin getUserInfo(String token);
+
+    public void logout(String token);
+
 }
