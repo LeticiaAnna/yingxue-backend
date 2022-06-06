@@ -121,6 +121,9 @@ public class UserServiceImpl implements UserService{
             if (!Objects.equals(headImg.getContentType(), "image/jpeg") && !Objects.equals(headImg.getContentType(), "image/png")){
                 throw new RuntimeException("只允许上传 jpeg|png 格式的头像,请规范操作");
             }
+            if (headImg.getSize() > 2097152){
+                throw new RuntimeException("头像大小大于 2MB ,请调整");
+            }
             if (!oldHeadImg.equals("")){
                 OSSUtil.deleteFile(oldHeadImg);
                 String headPath = OSSUtil.uploadFile(headImg,"yingxue/images/head/");

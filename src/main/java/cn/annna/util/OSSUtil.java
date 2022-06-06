@@ -41,6 +41,7 @@ public class OSSUtil {
             System.out.println("objectName: " + objectName);
             ossClient.deleteObject(bucketName, objectName);
         }catch (Exception e){
+            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         } finally {
             if (ossClient != null) {

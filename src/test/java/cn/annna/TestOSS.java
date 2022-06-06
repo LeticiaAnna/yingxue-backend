@@ -7,7 +7,7 @@ public class TestOSS {
 
     @Test
     public void delete() throws Exception {
-        OSSUtil.deleteFile("https://cat-hk.oss-cn-hongkong.aliyuncs.com/yingxue/images/head/1654491389139-1.jpg");
+        OSSUtil.deleteFile("https://cat-hk.oss-cn-hongkong.aliyuncs.com/yingxue/videos/video/1585660250687-火花.mp4");
     }
 
 }
