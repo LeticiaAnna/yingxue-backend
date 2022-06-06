@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.HashMap;
@@ -66,6 +67,26 @@ public class UserController {
     public User queryById(Integer id){
         try {
             return userService.queryById(id);
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/uploadHeadImg")
+    @ResponseBody
+    public Map<String,Object> uploadHeadImg(MultipartFile headImg,String oldHeadImg){
+        try {
+            return userService.uploadHeadImg(headImg,oldHeadImg);
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/deleteHead")
+    @ResponseBody
+    public Map<String,Object> deleteHead(String oldHeadImg){
+        try {
+            return userService.deleteHead(oldHeadImg);
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }
