@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -85,6 +86,17 @@ public class UserController {
     public Map<String,Object> deleteHead(String oldHeadImg){
         try {
             return userService.deleteHead(oldHeadImg);
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/searchUser")
+    @ResponseBody
+    public List<User> searchUser(String content){
+        System.out.println(content);
+        try {
+            return userService.searchUser(content);
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }

@@ -1,6 +1,7 @@
 package cn.annna;
 
 import cn.annna.dao.VideoMapper;
+import cn.annna.elasticsearch.VideoRepository;
 import cn.annna.entity.Video;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +16,8 @@ import java.util.List;
 public class TestVideo {
     @Autowired
     private VideoMapper videoMapper;
+    @Autowired
+    private VideoRepository videoRepository;
 
     @Test
     public void selectAll() throws Exception {
@@ -22,6 +25,12 @@ public class TestVideo {
         for (Video video : list) {
             System.out.println(video);
         }
+    }
+
+    @Test
+    public void insertAll() throws Exception {
+        List<Video> list = videoMapper.selectAll();
+        videoRepository.saveAll(list);
     }
 
 }

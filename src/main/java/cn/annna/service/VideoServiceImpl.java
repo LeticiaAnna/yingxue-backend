@@ -1,22 +1,37 @@
 package cn.annna.service;
 
 import cn.annna.dao.VideoMapper;
+import cn.annna.elasticsearch.VideoRepository;
 import cn.annna.entity.Video;
-import cn.annna.entity.VideoExample;
 import cn.annna.util.OSSUtil;
 import org.apache.ibatis.session.RowBounds;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
 public class VideoServiceImpl implements VideoService{
     @Autowired
     private VideoMapper videoMapper;
+    @Autowired
+    private RestHighLevelClient restHighLevelClient;
+    @Autowired
+    private VideoRepository videoRepository;
 
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
@@ -46,6 +61,7 @@ public class VideoServiceImpl implements VideoService{
                 throw new RuntimeException("视频不存在,请规范操作");
             }
             videoMapper.updateByPrimaryKeySelective(video);
+            videoRepository.save(video);
             map.put("message",v.getTitle() + " 信息修改成功");
             map.put("status",200);
             return map;
@@ -67,6 +83,7 @@ public class VideoServiceImpl implements VideoService{
             OSSUtil.deleteFile(v.getVideoPath());
             OSSUtil.deleteFile(v.getCoverPath());
             videoMapper.deleteByPrimaryKey(id);
+            videoRepository.deleteById(id);
             map.put("message",v.getTitle() + " 视频删除成功");
             map.put("status",200);
             return map;
@@ -87,6 +104,7 @@ public class VideoServiceImpl implements VideoService{
             video.setCreateTime(new Date());
             video.setStatus("1");
             videoMapper.insertSelective(video);
+            videoRepository.save(video);
             map.put("message",video.getTitle() + " 视频添加成功");
             map.put("status",200);
             return map;
@@ -98,6 +116,7 @@ public class VideoServiceImpl implements VideoService{
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public Video queryById(Integer id) {
         try {
             Video v = videoMapper.selectByPrimaryKey(id);
@@ -158,10 +177,69 @@ public class VideoServiceImpl implements VideoService{
     @Override
     public List<Video> searchVideo(String content) {
         try {
-            VideoExample videoExample = new VideoExample();
-            videoExample.createCriteria().andTitleLike("%" + content + "%");
-            return videoMapper.selectByExample(videoExample);
+            //VideoExample videoExample = new VideoExample();
+            //videoExample.createCriteria().andTitleLike("%" + content + "%");
+            //return videoMapper.selectByExample(videoExample);
+            SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+            sourceBuilder.query(QueryBuilders.queryStringQuery(content)
+                    .field("title")
+                    .field("description"));
+            // 设置高亮显示
+            HighlightBuilder highlightBuilder = new HighlightBuilder();
+            highlightBuilder
+                    .preTags("<font color='red'>")
+                    .postTags("</font>")
+                    .requireFieldMatch(false)
+                    .field("*");
+            sourceBuilder.highlighter(highlightBuilder);
+            // 查询的请求对象
+            SearchRequest searchRequest = new SearchRequest("yingxue_videos").types("video").source(sourceBuilder);
+            // 执行查询，获取查询到的响应对象
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            // 结果处理
+            List<Video> list = new ArrayList<>();
+            SearchHits searchHits = searchResponse.getHits();
+            SearchHit[] hits = searchHits.getHits();
+            for (SearchHit hit : hits) {
+                Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+
+                Map<String, HighlightField> highlightFieldsMap = hit.getHighlightFields();
+
+                // 把查到的原文档 转换为 java对象
+                int id = Integer.parseInt(sourceAsMap.get("id").toString());
+                String title = sourceAsMap.get("title").toString();
+                String description = sourceAsMap.get("description").toString();
+                String videoPath = sourceAsMap.get("videoPath").toString();
+                String coverPath = sourceAsMap.get("coverPath").toString();
+                String status = sourceAsMap.get("status").toString();
+                String createTime = sourceAsMap.get("createTime").toString();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date utilDate = sdf.parse(createTime);
+                int categoryId = Integer.parseInt(sourceAsMap.get("categoryId").toString());
+                int userId = Integer.parseInt(sourceAsMap.get("userId").toString());
+                int groupId = 0;
+                if (sourceAsMap.get("groupId") != null) {
+                    groupId = Integer.parseInt(sourceAsMap.get("groupId").toString());
+                }
+
+                Video video = new Video(id, title, description, videoPath, coverPath, status, utilDate, categoryId, userId, groupId);
+
+                // 判断是否需要高亮显示
+                if (highlightFieldsMap.get("title") != null) {
+                    title = highlightFieldsMap.get("title").fragments()[0].toString();
+                    video.setTitle(title);
+                }
+                if (highlightFieldsMap.get("description") != null) {
+                    description = highlightFieldsMap.get("description").fragments()[0].toString();
+                    video.setDescription(description);
+                }
+                // 添加到list
+                list.add(video);
+            }
+            System.out.println(list);
+            return list;
         }catch (Exception e){
+            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }

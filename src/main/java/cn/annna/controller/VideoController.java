@@ -89,6 +89,7 @@ public class VideoController {
     @RequestMapping("/searchVideo")
     @ResponseBody
     public List<Video> searchVideo(String content){
+        System.out.println(content);
         try {
             return videoService.searchVideo(content);
         }catch (Exception e){

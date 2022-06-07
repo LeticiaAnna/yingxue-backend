@@ -22,4 +22,6 @@ public interface UserService {
 
     public Map<String,Object> deleteHead(String oldHeadImg);
 
+    public List<User> searchUser(String content);
+
 }
