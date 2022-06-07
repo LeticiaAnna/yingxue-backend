@@ -78,7 +78,7 @@ public class VideoController {
     @RequestMapping("/uploadVideo")
     @ResponseBody
     public Map<String, Object> uploadVideo(MultipartFile videoFile, String oldVideo) {
-        System.out.println("videoFile" + videoFile);
+        //System.out.println("videoFile" + videoFile);
         try {
             return videoService.uploadVideo(videoFile, oldVideo);
         } catch (Exception e) {

@@ -1,7 +1,6 @@
 package cn.annna.service;
 
 import cn.annna.dao.VideoMapper;
-import cn.annna.entity.User;
 import cn.annna.entity.Video;
 import cn.annna.entity.VideoExample;
 import cn.annna.util.OSSUtil;
@@ -82,6 +81,9 @@ public class VideoServiceImpl implements VideoService{
     public Map<String, Object> add(Video video) {
         Map<String, Object> map = new HashMap<>();
         try {
+            if (video.getVideoPath().equals("")){
+                throw new RuntimeException("视频路径不允许为空,请检查视频是否上传");
+            }
             video.setCreateTime(new Date());
             video.setStatus("1");
             videoMapper.insertSelective(video);
@@ -118,23 +120,31 @@ public class VideoServiceImpl implements VideoService{
             if (!Objects.equals(videoFile.getContentType(), "video/mp4")){
                 throw new RuntimeException("只允许上传 mp4 格式的视频,请规范操作");
             }
-            if (videoFile.getSize() > 20971520){
-                throw new RuntimeException("视频大小大于 20MB ,请调整");
+            if (videoFile.getSize() > 104857600){
+                throw new RuntimeException("视频大小大于 100MB ,请调整");
             }
-            if (!oldVideo.equals("")){
+            // !oldVideo.equals("") ||
+            if (oldVideo != null){
                 System.out.println("视频更新");
                 OSSUtil.deleteFile(oldVideo);
+                String videoCover = oldVideo.replace(".mp4",".jpg");
+                System.out.println("videoCover: " + videoCover);
+                videoCover = videoCover.replace("yingxue/videos/video/","yingxue/videos/cover/");
+                System.out.println("videoCover: " + videoCover);
+                OSSUtil.deleteFile(videoCover);
                 String fileName = OSSUtil.uploadFile(videoFile,"yingxue/videos/video/");
+                String coverPath = OSSUtil.frameAndUpdate(fileName);
                 map.put("message","视频更新成功");
                 map.put("fileName",fileName);
-                map.put("coverName","123");
+                map.put("coverName",coverPath);
                 map.put("status",200);
             }else {
                 System.out.println("视频上传");
                 String fileName = OSSUtil.uploadFile(videoFile,"yingxue/videos/video/");
+                String coverPath = OSSUtil.frameAndUpdate(fileName);
                 map.put("message","视频上传成功");
                 map.put("fileName",fileName);
-                map.put("coverName","1231");
+                map.put("coverName",coverPath);
                 map.put("status",200);
             }
             return map;
