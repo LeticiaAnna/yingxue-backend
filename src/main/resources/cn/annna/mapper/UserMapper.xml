@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- namespace 需要补全 -->
+<mapper namespace="cn.annna.dao.UserMapper">
+
+    <select id="selectUserCount" resultType="cn.annna.vo.MonthCountVO">
+        SELECT
+            CONCAT(MONTH(create_time),'月') month ,
+            COUNT(IF (sex = '男',id,null)) boyCount,
+            COUNT(IF (sex = '女',id,null)) girlCount
+        FROM `yx_user`
+        WHERE YEAR(create_time) = YEAR(NOW())
+        GROUP BY MONTH(create_time)
+        ORDER BY MONTH
+    </select>
+
+</mapper>

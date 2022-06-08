@@ -1,10 +1,13 @@
 package cn.annna.service;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.annna.dao.VideoMapper;
 import cn.annna.elasticsearch.VideoRepository;
 import cn.annna.entity.Video;
 import cn.annna.util.OSSUtil;
 import org.apache.ibatis.session.RowBounds;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -21,6 +24,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -241,6 +245,27 @@ public class VideoServiceImpl implements VideoService{
         }catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Map<String, Object> exportVideo() {
+        Map<String, Object> map = new HashMap<>();
+        try {
+            String fileName = "应学视频列表-" + System.currentTimeMillis() + ".xls";
+            ExportParams exportParams = new ExportParams("应学平台视频表","videos");
+            List<Video> list = videoMapper.selectAll();
+            Workbook workbook = ExcelExportUtil.exportExcel(exportParams, Video.class, list);
+            FileOutputStream fileOutputStream = new FileOutputStream("c:\\" + fileName);
+            workbook.write(fileOutputStream);
+            fileOutputStream.close();
+            map.put("message","视频信息下载成功");
+            map.put("status",200);
+            return map;
+        }catch (Exception e){
+            map.put("message",e.getMessage());
+            map.put("status",400);
+            return map;
         }
     }
 }

@@ -23,4 +23,6 @@ public interface VideoService {
 
     public List<Video> searchVideo(String content);
 
+    public Map<String,Object> exportVideo();
+
 }

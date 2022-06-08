@@ -1,6 +1,7 @@
 package cn.annna.service;
 
 import cn.annna.entity.User;
+import cn.annna.vo.UserCountDataVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -23,5 +24,9 @@ public interface UserService {
     public Map<String,Object> deleteHead(String oldHeadImg);
 
     public List<User> searchUser(String content);
+
+    public Map<String,Object> exportUser();
+
+    public UserCountDataVO userCount();
 
 }

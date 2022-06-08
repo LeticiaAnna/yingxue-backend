@@ -96,4 +96,14 @@ public class VideoController {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    @RequestMapping("/exportVideo")
+    @ResponseBody
+    public Map<String,Object> exportVideo(){
+        try {
+            return videoService.exportVideo();
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 }

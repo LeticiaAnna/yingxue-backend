@@ -2,6 +2,7 @@ package cn.annna.controller;
 
 import cn.annna.entity.User;
 import cn.annna.service.UserService;
+import cn.annna.vo.UserCountDataVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -97,6 +98,26 @@ public class UserController {
         System.out.println(content);
         try {
             return userService.searchUser(content);
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/exportUser")
+    @ResponseBody
+    public Map<String,Object> exportUser(){
+        try {
+            return userService.exportUser();
+        }catch (Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/userCount")
+    @ResponseBody
+    public UserCountDataVO userCount(){
+        try {
+            return userService.userCount();
         }catch (Exception e){
             throw new RuntimeException(e.getMessage());
         }

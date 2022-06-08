@@ -1,10 +1,15 @@
 package cn.annna.service;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.annna.dao.UserMapper;
 import cn.annna.elasticsearch.UserRepository;
 import cn.annna.entity.User;
 import cn.annna.util.OSSUtil;
+import cn.annna.vo.MonthCountVO;
+import cn.annna.vo.UserCountDataVO;
 import org.apache.ibatis.session.RowBounds;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -21,6 +26,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -243,6 +250,48 @@ public class UserServiceImpl implements UserService{
         }catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Map<String, Object> exportUser() {
+        Map<String, Object> map = new HashMap<>();
+        try {
+            String fileName = "应学用户列表-" + System.currentTimeMillis() + ".xls";
+            ExportParams exportParams = new ExportParams("应学平台用户表","users");
+            List<User> list = userMapper.selectAll();
+
+            Workbook workbook = ExcelExportUtil.exportExcel(exportParams, User.class, list);
+            FileOutputStream fileOutputStream = new FileOutputStream("c:\\" + fileName);
+            workbook.write(fileOutputStream);
+            fileOutputStream.close();
+            map.put("message","用户信息下载成功");
+            map.put("status",200);
+            return map;
+        }catch (Exception e){
+            map.put("message",e.getMessage());
+            map.put("status",400);
+            return map;
+        }
+    }
+
+    @Override
+    public UserCountDataVO userCount() {
+        UserCountDataVO userCountDataVO = new UserCountDataVO();
+        try {
+            List<MonthCountVO> monthCountVO =  userMapper.selectUserCount();
+            for (MonthCountVO m : monthCountVO) {
+                userCountDataVO.getMonths().add(m.getMonth());
+                userCountDataVO.getBoyCount().add(m.getBoyCount());
+                userCountDataVO.getGirlCount().add(m.getGirlCount());
+            }
+            userCountDataVO.setMessage("信息获取成功");
+            userCountDataVO.setStatus(200);
+            return userCountDataVO;
+        }catch (Exception e){
+            userCountDataVO.setMessage(e.getMessage());
+            userCountDataVO.setStatus(400);
+            return userCountDataVO;
         }
     }
 }
