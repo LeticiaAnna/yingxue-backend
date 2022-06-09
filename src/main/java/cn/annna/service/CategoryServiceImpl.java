@@ -1,9 +1,9 @@
 package cn.annna.service;
 
+import cn.annna.annotation.DeleteCache;
 import cn.annna.dao.CategoryMapper;
 import cn.annna.entity.Category;
 import cn.annna.entity.CategoryExample;
-import cn.annna.entity.User;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,6 +72,7 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
+    @DeleteCache
     public Map<String, Object> add(Category category) {
         Map<String,Object> map = new HashMap<>();
         try {
@@ -107,6 +108,7 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
+    @DeleteCache
     public Map<String, Object> delete(Category category) {
         Map<String, Object> map = new HashMap<>();
         try {
@@ -160,6 +162,7 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
+    @DeleteCache
     public Map<String, Object> update(Category category) {
         Map<String, Object> map = new HashMap<>();
         try {
